@@ -19,6 +19,28 @@ namespace MoviesAPI.Controllers
             _context = context;
         }
 
+        [HttpGet]
+        public async Task<IActionResult> GetAllAsync()
+        {
+            var movies = await _context.Movies
+                .OrderByDescending(m => m.Rate)
+                .Include(m => m.Genre) // include genres to view the genre details along with movies
+                .Select(m => new MovieDetailsDto
+                {
+                    Id = m.Id,
+                    GenreId = m.GenreId,
+                    GenreName = m.Genre!.Name,
+                    Poster = m.Poster,
+                    Rate = m.Rate,
+                    StoryLine = m.StoryLine,
+                    Title = m.Title,
+                    Year = m.Year
+                })
+                .ToListAsync();
+
+            return Ok(movies);
+        }
+
 
         [HttpPost]
         public async Task<IActionResult> CreateAsync(CreateMovieDto dto)
