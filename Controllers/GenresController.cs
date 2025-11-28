@@ -21,8 +21,8 @@ namespace MoviesAPI.Controllers
         [HttpGet]
         public async Task<IActionResult> GetAllAsync()
         {
-            var geres = await _context.Genres.OrderBy(g => g.Name).ToListAsync();
-            return Ok(geres);
+            var genres = await _context.Genres.OrderBy(g => g.Name).ToListAsync();
+            return Ok(genres);
         }
 
         [HttpPost]
