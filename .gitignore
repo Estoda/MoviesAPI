@@ -1,0 +1,17 @@
+# VS files
+.vs/ 
+
+# bin/obj folders
+bin/
+obj/
+
+# User-specific files
+*.user
+*.suo
+
+# Rider files
+.idea/
+
+# Build Results
+[Dd]ebug/
+[Rr]elease/
