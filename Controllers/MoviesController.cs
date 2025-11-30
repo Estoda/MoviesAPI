@@ -25,22 +25,21 @@ namespace MoviesAPI.Controllers
             var movies = await _context.Movies
                 .OrderByDescending(m => m.Rate)
                 .Include(m => m.Genre) // include genres to view the genre details along with movies
-                .Select(m => new MovieDetailsDto
-                {
-                    Id = m.Id,
-                    GenreId = m.GenreId,
-                    GenreName = m.Genre!.Name,
-                    Poster = m.Poster,
-                    Rate = m.Rate,
-                    StoryLine = m.StoryLine,
-                    Title = m.Title,
-                    Year = m.Year
-                })
                 .ToListAsync();
 
             return Ok(movies);
         }
 
+        [HttpGet("{id}")]
+        public async Task<IActionResult> GetByIdAsync(int id)
+        {
+            var movie = await _context.Movies.Include(m => m.Genre).SingleOrDefaultAsync(m => m.Id == id);
+
+            if (movie == null)
+                return NotFound($"No movie was found with id: {id}!");
+            else
+                return Ok(movie);
+        }
 
         [HttpPost]
         public async Task<IActionResult> CreateAsync(CreateMovieDto dto)
