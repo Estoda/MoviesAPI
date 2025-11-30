@@ -41,6 +41,21 @@ namespace MoviesAPI.Controllers
                 return Ok(movie);
         }
 
+        [HttpGet("GetByGenre/{genreId}")]
+        public async Task<IActionResult> GetByGenreIdAsync(int genreId)
+        {
+            var movies = await _context.Movies
+                .Where(m => m.GenreId == genreId)
+                .OrderByDescending(m => m.Rate)
+                .Include(m => m.Genre)
+                .ToListAsync();
+
+            if (movies.Count == 0)
+                return NotFound($"No movies were found for genre id: {genreId}!");
+            else
+                return Ok(movies);
+        }
+
         [HttpPost]
         public async Task<IActionResult> CreateAsync(CreateMovieDto dto)
         {

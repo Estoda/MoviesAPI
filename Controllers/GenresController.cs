@@ -25,6 +25,17 @@ namespace MoviesAPI.Controllers
             return Ok(genres);
         }
 
+        [HttpGet("{id}")]
+        public async Task<IActionResult> GetByIdAsync(int id)
+        {
+            var genre = await _context.Genres.SingleOrDefaultAsync(g => g.Id == id);
+
+            if (genre == null)
+                return NotFound($"No genre was found with id: {id}!");
+            else
+                return Ok(genre);
+        }
+
         [HttpPost]
         public async Task<IActionResult> CreateAsync(CreateGenreDto dto)
         {
