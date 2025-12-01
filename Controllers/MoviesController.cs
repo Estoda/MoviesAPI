@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using MoviesAPI.Services;
+using AutoMapper;
 
 namespace MoviesAPI.Controllers
 {
@@ -10,14 +11,15 @@ namespace MoviesAPI.Controllers
     public class MoviesController : ControllerBase
     {
         private readonly IMoviesService _moviesService;
-
+        private readonly IMapper _mapper;
         private readonly List<string> _allowedExtensions = new List<string> { ".jpg", ".png" };
         private readonly long _maxAllowedPosterSize = 1024 * 1024; // 1MB
 
         // Constructor to inject the ApplicationDbContext
-        public MoviesController(IMoviesService moviesService)
+        public MoviesController(IMoviesService moviesService, IMapper mapper)
         {
             _moviesService = moviesService;
+            _mapper = mapper;
         }
 
         [HttpGet]
@@ -25,13 +27,15 @@ namespace MoviesAPI.Controllers
         {
             var movies = await _moviesService.GetAll();
 
-            return Ok(movies);
+            var data = _mapper.Map<IEnumerable<MovieDetailsDto>>(movies);
+
+            return Ok(data);
         }
 
         [HttpGet("{id}")]
         public async Task<IActionResult> GetByIdAsync(int id)
         {
-            var movie = await _moviesService.GetById(id);
+            var movie = await _moviesService.GetAll(id);
 
             if (movie == null)
                 return NotFound($"No movie was found with id: {id}!");
@@ -64,17 +68,9 @@ namespace MoviesAPI.Controllers
                     await dto.Poster.CopyToAsync(dataStream); // Copy the poster file to the memory stream
             }
 
-            var Poster = dto.Poster is null ? null : dataStream.ToArray();
+            var movie = _mapper.Map<Movie>(dto);
 
-            var movie = new Movie
-            {
-                Title = dto.Title,
-                Year = dto.Year,
-                Rate = dto.Rate,
-                StoryLine = dto.StoryLine,
-                Poster = Poster,
-                GenreId = dto.GenreId
-            };
+            movie.Poster = dataStream.ToArray();
 
             var isValidGenre = await _moviesService.IsValidGenre(dto.GenreId);
 
@@ -89,7 +85,7 @@ namespace MoviesAPI.Controllers
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdateAsync(int id,[FromForm] CreateMovieDto dto)
         {
-            var movie = await _moviesService.GetById(id);
+            var movie = (await _moviesService.GetAll(id)).FirstOrDefault();
 
             if (movie == null)
                 return NotFound($"No movie was found with id: {id}!");
@@ -128,7 +124,7 @@ namespace MoviesAPI.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteAsync(int id)
         {
-            var movie = await _moviesService.GetById(id);
+            var movie = (await _moviesService.GetAll(id)).FirstOrDefault();
 
             if (movie == null)
                 return NotFound($"No movie was found with id: {id}!");

@@ -23,6 +23,7 @@ namespace MoviesAPI
             builder.Services.AddTransient<IGenresService, GenresService>(); // Dependency Injection for GenresService
             builder.Services.AddTransient<IMoviesService, MoviesService>();
             builder.Services.AddCors();
+            builder.Services.AddAutoMapper(typeof(Program));
             builder.Services.AddSwaggerGen(options =>
             {
                 options.SwaggerDoc("v1", new Microsoft.OpenApi.Models.OpenApiInfo 

@@ -9,9 +9,10 @@ namespace MoviesAPI.Services
 
         public MoviesService(ApplicationDbContext context) => _context = context;
 
-        public async Task<IEnumerable<Movie>> GetAll()
+        public async Task<IEnumerable<Movie>> GetAll(int movieId = 0)
         {
             return await _context.Movies
+                .Where(m => m.Id == movieId || movieId == 0)
                 .OrderByDescending(m => m.Rate)
                 .Include(m => m.Genre) 
                 .ToListAsync();
@@ -35,11 +36,6 @@ namespace MoviesAPI.Services
             _context.SaveChangesAsync();
 
             return movie;
-        }
-
-        public async Task<Movie?> GetById(int id)
-        {
-            return await _context.Movies.Include(m => m.Genre).SingleOrDefaultAsync(m => m.Id == id);
         }
 
         public async Task<IEnumerable<Movie>> GetByGenreId(int genreId)
