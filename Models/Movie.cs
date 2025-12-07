@@ -1,4 +1,6 @@
-﻿namespace MoviesAPI.Models
+﻿using System.Text.Json.Serialization;
+
+namespace MoviesAPI.Models
 {
     public class Movie
     {
@@ -17,7 +19,6 @@
         public byte[]? Poster {get; set;}
 
         public int GenreId {get; set;}  // Foreign key
-
         public Genre? Genre {get; set;} // Navigation property
     }
 }

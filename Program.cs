@@ -20,8 +20,10 @@ namespace MoviesAPI
             builder.Services.AddControllers();
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             builder.Services.AddEndpointsApiExplorer();
-            builder.Services.AddTransient<IGenresService, GenresService>(); // Dependency Injection for GenresService
-            builder.Services.AddTransient<IMoviesService, MoviesService>();
+            builder.Services.AddScoped<IGenresService, GenresService>(); // Dependency Injection for GenresService
+            builder.Services.AddScoped<IMoviesRepository, MoviesRepository>();
+            builder.Services.AddScoped<GetAllMoviesQuiry>();
+            builder.Services.AddScoped<GetByIdQuery>();
             builder.Services.AddCors();
             builder.Services.AddAutoMapper(typeof(Program));
             builder.Services.AddSwaggerGen(options =>

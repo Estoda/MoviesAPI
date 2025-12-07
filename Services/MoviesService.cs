@@ -3,11 +3,11 @@ using Microsoft.EntityFrameworkCore;
 
 namespace MoviesAPI.Services
 {
-    public class MoviesService : IMoviesService
+    public class MoviesRepository : IMoviesRepository
     {
         private readonly ApplicationDbContext _context;
 
-        public MoviesService(ApplicationDbContext context) => _context = context;
+        public MoviesRepository(ApplicationDbContext context) => _context = context;
 
         public async Task<IEnumerable<Movie>> GetAll(int movieId = 0)
         {
@@ -16,6 +16,13 @@ namespace MoviesAPI.Services
                 .OrderByDescending(m => m.Rate)
                 .Include(m => m.Genre) 
                 .ToListAsync();
+        }
+
+        public async Task<Movie?> GetById(int movieId)
+        {
+            return await _context.Movies
+                .Include(m => m.Genre)
+                .FirstOrDefaultAsync(m => m.Id == movieId);
         }
 
         public async Task<Movie> Add(Movie movie)
